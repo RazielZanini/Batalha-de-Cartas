@@ -8,16 +8,28 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import kotlin.random.Random
 
+object Turno{
+    var vez = 1
+
+    fun trocarVez(){
+        vez = if(vez == 1){
+            2
+        }else{
+            1
+        }
+    }
+}
+
 fun main() {
     //variável para armazenar as cartas já carregadas
     val cardList: List<Carta> = loadCards()
 
     println("Informe os nomes dos jogadores: ")
 
-    val jogador1: Jogador = Jogador(readlnOrNull().toString());
-    val jogador2: Jogador = Jogador(readlnOrNull().toString());
+    val jogador1 = Jogador(readlnOrNull().toString());
+    val jogador2 = Jogador(readlnOrNull().toString());
 
-    val tabuleiro: Campo = Campo()
+    val tabuleiro = Campo()
 
     //distribuição de cartas para cada jogador
     for (i in 0 until 5){
@@ -39,22 +51,21 @@ fun main() {
 
         val opcao: Int? = readlnOrNull()?.toInt()
 
+        val jogadorVez = if(Turno.vez == 1) jogador1 else jogador2
+
         //verificar a escolha de opcao do usuário e executa de acordo
         when(opcao){
+
             1 -> {
-                if(Turno.vez == 1){
-                    invocarCarta(jogador1, tabuleiro)
-                } else{
-                    invocarCarta(jogador2, tabuleiro)
-                }
+                invocarCarta(jogadorVez, tabuleiro)
             }
 
             2 -> {
-                if(Turno.vez == 1){
-                    equiparCarta(jogador1)
-                }else{
-                    equiparCarta(jogador2)
-                }
+                equiparCarta(jogadorVez)
+            }
+
+            3 -> {
+                descartarCarta(jogadorVez)
             }
 
             6-> Turno.trocarVez()
@@ -63,16 +74,20 @@ fun main() {
     }
 }
 
-object Turno{
- var vez = 1
+fun descartarCarta(jogador: Jogador){
+    println("Escolha um carta para descartar")
+    jogador.printCartas()
 
-    fun trocarVez(){
-        vez = if(vez == 1){
-            2
-        }else{
-            1
-        }
+    val indexCarta = readlnOrNull()?.toIntOrNull()
+
+    if (indexCarta == null || indexCarta !in jogador.cartas.indices) {
+        println("Erro! Índice inválido, tente novamente.")
+        return
     }
+    val cartaSelecionada = jogador.cartas[indexCarta]
+    jogador.cartas.remove(cartaSelecionada)
+
+    println("Carta ${cartaSelecionada.name} descartada!")
 }
 
 fun invocarCarta(jogador: Jogador, tabuleiro: Campo){
@@ -89,7 +104,7 @@ fun invocarCarta(jogador: Jogador, tabuleiro: Campo){
     val monstroIndex = readlnOrNull()?.toInt()
     //verifica se o index selecionado está dentro do indice de cartas da mão do jogador
     val cartaSelecionada = monstroIndex?.let {
-        if(it in jogador.cartas.indices) jogador.cartas[it] else null
+        if(it in jogador.cartas.indices) jogador.cartas[it] else println("Erro! Valor inválido, tente novamente.")
     }
 
     if(cartaSelecionada is CartaMonstro){
@@ -99,6 +114,7 @@ fun invocarCarta(jogador: Jogador, tabuleiro: Campo){
         if(estado == "A" || estado == "D"){
             cartaSelecionada.setPosicao(estado)
             ladoTabuleiro.add(cartaSelecionada)
+            jogador.cartas.remove(cartaSelecionada)
             println("Carta invocada com sucesso!")
         } else{
             println("Estado invalido! Escolha 'A' para ataque ou 'D' para defesa.")
@@ -127,6 +143,7 @@ fun equiparCarta(jogador: Jogador){
 
         if(cartaEquipSelec is CartaEquip){
             cartaMonstroSelec.equipamentos.add(cartaEquipSelec)
+            jogador.cartas.remove(cartaEquipSelec)
 
         } else{
 
