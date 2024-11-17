@@ -5,7 +5,7 @@ import model.cartas.CartaMonstro
 
 class Jogador(var nome: String) {
 
-    private var vida: Int = 1000
+    private var vida: Int = 10000
     var cartas  = mutableListOf<Carta>()
 
         fun getVida():Int{
@@ -18,7 +18,7 @@ class Jogador(var nome: String) {
 
     fun printCartas(){
         for (i in 0..<cartas.size) {
-            println("$i : ${cartas[i].name} | tipo: ${cartas[i].type}")
+            println("$i : ${cartas[i].name} | tipo: ${cartas[i].type} | ")
         }
     }
 }
