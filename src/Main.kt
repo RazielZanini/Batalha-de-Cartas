@@ -123,10 +123,10 @@ fun main() {
 
             6 -> {
                 if (Turno.vez == 2) {
-                    addCartaTurno(jogador1, jogador2, cardList)
+                    CartaController.addCartaTurno(jogador1, jogador2, cardList)
                     rodada++
                     //renova os ataques dos jogadores
-                    resetAtaques(jogador1, jogador2)
+                    resetAtaques(jogador1, jogador2, tabuleiro)
                 }
                 Turno.trocarVez()
             }
@@ -137,14 +137,6 @@ fun main() {
     declararGanhador(jogador1, jogador2)
 }
 
-fun addCartaTurno(jogador1: Jogador, jogador2: Jogador, cardList: MutableList<Carta>){
-    var index = Random.nextInt(cardList.size)
-    jogador1.cartas.add(cardList[index])
-    cardList.removeAt(index)
-    index = Random.nextInt(cardList.size)
-    jogador2.cartas.add(cardList[index])
-    cardList.removeAt(index)
-}
 
 fun declararGanhador(jogador1: Jogador, jogador2: Jogador){
     if(jogador1.getVida() > jogador2.getVida()){
@@ -154,9 +146,9 @@ fun declararGanhador(jogador1: Jogador, jogador2: Jogador){
     }
 }
 
-fun resetAtaques(jogador1: Jogador, jogador2: Jogador) {
-    jogador1.cartas.forEach { if (it is CartaMonstro) it.ataqueTurno = false }
-    jogador2.cartas.forEach { if (it is CartaMonstro) it.ataqueTurno = false }
+fun resetAtaques(jogador1: Jogador, jogador2: Jogador, campo: Campo) {
+    campo.ladoVermelho.forEach{ it?.ataqueTurno = false}
+    campo.ladoAzul.forEach{it?.ataqueTurno = false}
 }
 
 fun Campo.getLadoTabuleiro(vez: Int): MutableList<CartaMonstro?> {
